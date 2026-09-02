@@ -1,84 +1,123 @@
-import { MapPin, Bed, Bath, Ruler } from "lucide-react";
+import React from 'react';
+import { useApp } from '../context/AppContext';
+import { MapPin, Bed, Bath, Ruler, Heart, ArrowRight, Sparkles } from 'lucide-react';
 
-interface Property {
-  title: string;
-  location: string;
-  price: string;
-  beds: number;
-  baths: number;
-  sqft: string;
-  image: string;
-  status: 'FOR SALE' | 'FOR RENT';
-}
+export const FeaturedProperties: React.FC = () => {
+  const { properties, openPropertyDetail, isFavorite, toggleFavorite, setActiveTab } = useApp();
 
-const properties: Property[] = [
-  {
-    title: "Modernist Sky Villa",
-    location: "Beverly Hills, CA 90210",
-    price: "$1,250,000",
-    beds: 4,
-    baths: 3,
-    sqft: "2,400 sqft",
-    image: "https://images.unsplash.com/photo-1613490493576-7fde63acd811?auto=format&fit=crop&q=80&w=800",
-    status: 'FOR SALE'
-  },
-  {
-    title: "The Penthouse Suite",
-    location: "Manhattan, NY 10001",
-    price: "$4,500/mo",
-    beds: 2,
-    baths: 2,
-    sqft: "1,150 sqft",
-    image: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&q=80&w=800",
-    status: 'FOR RENT'
-  },
-  {
-    title: "Lakeside Retreat",
-    location: "Austin, TX 78701",
-    price: "$890,000",
-    beds: 3,
-    baths: 3,
-    sqft: "1,900 sqft",
-    image: "https://images.unsplash.com/photo-1600607687940-47a0f925901e?auto=format&fit=crop&q=80&w=800",
-    status: 'FOR SALE'
-  },
-];
+  const featuredList = properties.filter(p => p.featured).slice(0, 3);
+  const displayProperties = featuredList.length > 0 ? featuredList : properties.slice(0, 3);
 
-export function FeaturedProperties() {
   return (
-    <section className="max-w-7xl mx-auto px-4 py-20">
-      <div className="flex justify-between items-end mb-12">
+    <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+      <div className="flex flex-col md:flex-row justify-between md:items-end mb-12 gap-4">
         <div>
-          <h2 className="text-3xl font-bold text-gray-900">Featured Listings</h2>
-          <p className="text-gray-500 mt-2">Explore our hand-picked premium properties</p>
+          <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 text-blue-600 font-bold text-xs uppercase tracking-wider mb-2">
+            <Sparkles className="w-3.5 h-3.5" /> Handpicked Collection
+          </span>
+          <h2 className="text-3xl sm:text-4xl font-black text-gray-900 tracking-tight">
+            Featured Residences
+          </h2>
+          <p className="text-gray-500 mt-2 text-sm sm:text-base max-w-xl">
+            Explore our prime architectural listings with proven appraisal value, verified titles, and bespoke amenities.
+          </p>
         </div>
-        <a href="#" className="text-blue-600 font-bold flex items-center hover:underline">
-          View All <span className="ml-2 text-sm">→</span>
-        </a>
+        <button
+          onClick={() => setActiveTab('properties')}
+          className="text-blue-600 font-bold text-sm flex items-center hover:text-blue-700 transition group self-start md:self-auto"
+        >
+          View All Listings
+          <ArrowRight className="w-4 h-4 ml-1.5 group-hover:translate-x-1 transition-transform" />
+        </button>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-        {properties.map((p, i) => (
-          <div key={i} className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100">
-            <div className="relative overflow-hidden">
-              <img src={p.image} className="w-full h-64 object-cover transition-transform duration-500 hover:scale-105" alt={p.title} />
-              <span className={`absolute top-4 left-4 ${p.status === 'FOR SALE' ? 'bg-blue-600' : 'bg-green-600'} text-white px-3 py-1 rounded-md text-sm font-bold`}>{p.status}</span>
-              <span className="absolute top-4 right-4 bg-white/90 backdrop-blur px-3 py-1 rounded-md text-sm font-bold text-gray-800">{p.price}</span>
-            </div>
-            <div className="p-6">
-              <h3 className="text-xl font-bold mb-2">{p.title}</h3>
-              <p className="text-gray-500 flex items-center text-sm mb-4">
-                <MapPin className="mr-2 text-blue-600 w-4 h-4" /> {p.location}
-              </p>
-              <div className="flex justify-between items-center py-4 border-t border-gray-50 text-gray-600">
-                <span className="flex items-center text-sm"><Bed className="mr-2 text-blue-500 w-4 h-4" /> {p.beds} Beds</span>
-                <span className="flex items-center text-sm"><Bath className="mr-2 text-blue-500 w-4 h-4" /> {p.baths} Baths</span>
-                <span className="flex items-center text-sm"><Ruler className="mr-2 text-blue-500 w-4 h-4" /> {p.sqft}</span>
+        {displayProperties.map(p => {
+          const isFav = isFavorite(p.id);
+          return (
+            <div
+              key={p.id}
+              onClick={() => openPropertyDetail(p)}
+              className="bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-300 border border-gray-100 flex flex-col cursor-pointer group"
+            >
+              <div className="relative h-64 overflow-hidden">
+                <img
+                  src={p.image}
+                  alt={p.title}
+                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-60" />
+
+                {/* Badges */}
+                <div className="absolute top-4 left-4 flex gap-2">
+                  <span
+                    className={`text-xs font-bold px-3 py-1 rounded-lg text-white shadow-md ${
+                      p.status === 'FOR SALE' ? 'bg-blue-600' : 'bg-emerald-600'
+                    }`}
+                  >
+                    {p.status}
+                  </span>
+                  <span className="text-xs font-bold px-3 py-1 rounded-lg bg-gray-900/80 backdrop-blur text-white shadow-md">
+                    {p.propertyType}
+                  </span>
+                </div>
+
+                {/* Favorite Toggle Button */}
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    toggleFavorite(p.id);
+                  }}
+                  className={`absolute top-4 right-4 w-9 h-9 rounded-full bg-white/90 backdrop-blur shadow-md flex items-center justify-center transition ${
+                    isFav ? 'text-rose-500' : 'text-gray-700 hover:text-rose-500 hover:bg-white'
+                  }`}
+                  title={isFav ? 'Remove from favorites' : 'Save to favorites'}
+                >
+                  <Heart className={`w-4 h-4 ${isFav ? 'fill-rose-500' : ''}`} />
+                </button>
+
+                {/* Price Display */}
+                <span className="absolute bottom-4 left-4 text-2xl font-black text-white tracking-tight drop-shadow-md">
+                  {p.priceDisplay}
+                </span>
+              </div>
+
+              <div className="p-6 flex-1 flex flex-col justify-between">
+                <div>
+                  <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition line-clamp-1">
+                    {p.title}
+                  </h3>
+                  <p className="text-gray-500 text-sm flex items-center mb-4 line-clamp-1">
+                    <MapPin className="w-4 h-4 mr-1.5 text-blue-600 shrink-0" />
+                    {p.location}
+                  </p>
+                </div>
+
+                <div>
+                  <div className="flex justify-between items-center py-4 border-t border-gray-100 text-gray-600 text-sm">
+                    <span className="flex items-center">
+                      <Bed className="w-4 h-4 mr-1.5 text-blue-500" />
+                      {p.beds} Beds
+                    </span>
+                    <span className="flex items-center">
+                      <Bath className="w-4 h-4 mr-1.5 text-blue-500" />
+                      {p.baths} Baths
+                    </span>
+                    <span className="flex items-center">
+                      <Ruler className="w-4 h-4 mr-1.5 text-blue-500" />
+                      {p.sqft.toLocaleString()} sqft
+                    </span>
+                  </div>
+
+                  <button className="w-full mt-2 bg-gray-50 hover:bg-blue-600 hover:text-white text-gray-900 font-bold py-3 rounded-2xl text-xs transition duration-200">
+                    View Details & Tour
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </section>
   );
-}
+};

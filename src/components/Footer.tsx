@@ -1,68 +1,191 @@
-import { Building, MapPin, Phone, Mail, Send, Facebook, Instagram, Linkedin } from "lucide-react";
+import React, { useState } from 'react';
+import { useApp } from '../context/AppContext';
+import {
+  Building, MapPin, Phone, Mail, Send, Facebook, Instagram, Linkedin,
+  Shield, CheckCircle2
+} from 'lucide-react';
 
-export function Footer() {
+export const Footer: React.FC = () => {
+  const { setActiveTab, addToast } = useApp();
+  const [newsletterEmail, setNewsletterEmail] = useState('');
+
+  const handleNewsletterSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newsletterEmail.trim()) return;
+    addToast(
+      'Subscribed to Market Insights!',
+      `Thank you! Monthly private luxury market reports will be delivered to ${newsletterEmail}.`,
+      'success'
+    );
+    setNewsletterEmail('');
+  };
+
   return (
-    <footer className="bg-white border-t border-gray-200 pt-20 pb-10">
-      <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
-        <div className="col-span-1 md:col-span-1">
-          <div className="flex items-center gap-2 mb-6">
-            <div className="bg-blue-600 p-1.5 rounded-lg">
-              <Building className="text-white w-4 h-4" />
+    <footer className="bg-gray-950 text-white border-t border-gray-800 pt-20 pb-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12 mb-16">
+          {/* Brand Info (Col 1-2) */}
+          <div className="lg:col-span-2">
+            <div
+              onClick={() => setActiveTab('home')}
+              className="flex items-center gap-2 mb-6 cursor-pointer inline-flex"
+            >
+              <div className="bg-blue-600 p-2.5 rounded-xl">
+                <Building className="text-white w-5 h-5" />
+              </div>
+              <span className="text-2xl font-black tracking-tight text-white">
+                Apex<span className="text-blue-500">PDS</span>
+              </span>
             </div>
-            <span className="text-xl font-bold tracking-tight">ApexPDSSolutions</span>
+            <p className="text-gray-400 text-sm leading-relaxed mb-6 max-w-sm">
+              Apex PDS Solutions is an internationally recognized luxury real estate brokerage providing institutional advisory, bespoke property acquisitions, and confidential transaction management.
+            </p>
+            <div className="flex gap-3">
+              <a
+                href="https://facebook.com"
+                target="_blank"
+                rel="noreferrer"
+                className="w-10 h-10 rounded-full bg-gray-900 border border-gray-800 flex items-center justify-center text-gray-400 hover:bg-blue-600 hover:text-white hover:border-blue-600 transition"
+              >
+                <Facebook className="w-4 h-4" />
+              </a>
+              <a
+                href="https://instagram.com"
+                target="_blank"
+                rel="noreferrer"
+                className="w-10 h-10 rounded-full bg-gray-900 border border-gray-800 flex items-center justify-center text-gray-400 hover:bg-blue-600 hover:text-white hover:border-blue-600 transition"
+              >
+                <Instagram className="w-4 h-4" />
+              </a>
+              <a
+                href="https://linkedin.com"
+                target="_blank"
+                rel="noreferrer"
+                className="w-10 h-10 rounded-full bg-gray-900 border border-gray-800 flex items-center justify-center text-gray-400 hover:bg-blue-600 hover:text-white hover:border-blue-600 transition"
+              >
+                <Linkedin className="w-4 h-4" />
+              </a>
+            </div>
           </div>
-          <p className="text-gray-500 leading-relaxed mb-6">
-            Providing premium real estate services with transparency and excellence since 2010. Your dream home is one click away.
-          </p>
-          <div className="flex gap-4">
-            <a href="#" className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 hover:bg-blue-600 hover:text-white transition"><Facebook className="w-5 h-5"/></a>
-            <a href="#" className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 hover:bg-blue-600 hover:text-white transition"><Instagram className="w-5 h-5"/></a>
-            <a href="#" className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 hover:bg-blue-600 hover:text-white transition"><Linkedin className="w-5 h-5"/></a>
+
+          {/* Quick Links */}
+          <div>
+            <h4 className="font-bold text-sm text-white uppercase tracking-wider mb-6">Marketplace</h4>
+            <ul className="space-y-3.5 text-sm text-gray-400">
+              <li>
+                <button
+                  onClick={() => setActiveTab('properties', { status: 'FOR SALE' })}
+                  className="hover:text-white transition"
+                >
+                  Properties for Sale
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => setActiveTab('properties', { status: 'FOR RENT' })}
+                  className="hover:text-white transition"
+                >
+                  Luxury Rentals
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => setActiveTab('sell')}
+                  className="hover:text-white transition"
+                >
+                  List Your Residence
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => setActiveTab('agents')}
+                  className="hover:text-white transition"
+                >
+                  Senior Brokers
+                </button>
+              </li>
+            </ul>
           </div>
-        </div>
-        
-        <div>
-          <h4 className="font-bold mb-6">Quick Links</h4>
-          <ul className="space-y-4 text-gray-500">
-            <li><a href="#" className="hover:text-blue-600 transition">Latest Listings</a></li>
-            <li><a href="#" className="hover:text-blue-600 transition">About Our Agency</a></li>
-            <li><a href="#" className="hover:text-blue-600 transition">Privacy Policy</a></li>
-            <li><a href="#" className="hover:text-blue-600 transition">Contact Support</a></li>
-          </ul>
+
+          {/* Advisory & Support */}
+          <div>
+            <h4 className="font-bold text-sm text-white uppercase tracking-wider mb-6">Services</h4>
+            <ul className="space-y-3.5 text-sm text-gray-400">
+              <li>
+                <button
+                  onClick={() => setActiveTab('contact')}
+                  className="hover:text-white transition"
+                >
+                  Concierge Desk
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => setActiveTab('agents')}
+                  className="hover:text-white transition"
+                >
+                  Advisory Consultation
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => setActiveTab('contact')}
+                  className="hover:text-white transition"
+                >
+                  Valuation & Appraisals
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => setActiveTab('contact')}
+                  className="hover:text-white transition"
+                >
+                  Frequently Asked Questions
+                </button>
+              </li>
+            </ul>
+          </div>
+
+          {/* Newsletter */}
+          <div>
+            <h4 className="font-bold text-sm text-white uppercase tracking-wider mb-6">Market Insights</h4>
+            <p className="text-gray-400 mb-4 text-xs leading-relaxed">
+              Subscribe to receive off-market listings and quarterly real estate reports.
+            </p>
+            <form onSubmit={handleNewsletterSubmit} className="relative">
+              <input
+                type="email"
+                required
+                value={newsletterEmail}
+                onChange={e => setNewsletterEmail(e.target.value)}
+                placeholder="Enter your email"
+                className="w-full bg-gray-900 border border-gray-800 rounded-xl px-4 py-3 outline-none focus:border-blue-500 text-white text-xs transition placeholder-gray-500"
+              />
+              <button
+                type="submit"
+                className="absolute right-1.5 top-1.5 bottom-1.5 bg-blue-600 hover:bg-blue-700 text-white px-3.5 rounded-lg text-xs font-bold transition flex items-center justify-center"
+                title="Subscribe"
+              >
+                <Send className="w-3.5 h-3.5" />
+              </button>
+            </form>
+            <div className="flex items-center gap-2 mt-4 text-[11px] text-gray-500">
+              <Shield className="w-3.5 h-3.5 text-blue-500" />
+              <span>We value your privacy. Unsubscribe anytime.</span>
+            </div>
+          </div>
         </div>
 
-        <div>
-          <h4 className="font-bold mb-6">Contact Us</h4>
-          <ul className="space-y-4 text-gray-500">
-            <li className="flex items-start gap-3">
-              <MapPin className="mt-1 text-blue-600 w-5 h-5" />
-              <span>123 Realty Tower, <br/>Financial District, NY</span>
-            </li>
-            <li className="flex items-center gap-3">
-              <Phone className="text-blue-600 w-5 h-5" />
-              <span>+1 (234) 567 890</span>
-            </li>
-            <li className="flex items-center gap-3">
-              <Mail className="text-blue-600 w-5 h-5" />
-              <span>hello@eliteestates.com</span>
-            </li>
-          </ul>
-        </div>
-
-        <div>
-          <h4 className="font-bold mb-6">Newsletter</h4>
-          <p className="text-gray-500 mb-4 text-sm">Subscribe to get the latest property market reports.</p>
-          <div className="relative">
-            <input type="email" placeholder="Email address" className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 outline-none focus:border-blue-600 transition text-sm"/>
-            <button className="absolute right-2 top-2 bottom-2 bg-blue-600 text-white px-4 rounded-lg hover:bg-blue-700">
-              <Send className="w-4 h-4"/>
-            </button>
+        {/* Bottom bar */}
+        <div className="pt-8 border-t border-gray-900 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-gray-500">
+          <p>© {new Date().getFullYear()} Apex PDS Solutions International, LLC. All rights reserved.</p>
+          <div className="flex gap-6">
+            <button onClick={() => setActiveTab('contact')} className="hover:text-gray-400 transition">Privacy Policy</button>
+            <button onClick={() => setActiveTab('contact')} className="hover:text-gray-400 transition">Terms of Service</button>
+            <button onClick={() => setActiveTab('contact')} className="hover:text-gray-400 transition">Equal Housing Opportunity</button>
           </div>
         </div>
-      </div>
-      <div className="max-w-7xl mx-auto px-4 border-t border-gray-100 pt-10 text-center text-gray-400 text-sm">
-        © 2024 ApexPDSSolutions International. All rights reserved.
       </div>
     </footer>
   );
-}
+};
